@@ -23,16 +23,16 @@ const (
 
 // log flags
 const (
-	Ldate         = log.Ldate
-	Ltime         = log.Ltime
-	Lmicroseconds = log.Lmicroseconds
-	Llongfile     = log.Llongfile
-	Lshortfile    = log.Lshortfile
-	LUTC          = log.LUTC
-	LstdFlags     = log.LstdFlags
-	Llevel        = LUTC << iota
+	Ldate = 1 << iota
+	Ltime
+	Lmicroseconds
+	Llongfile
+	Lshortfile
+	LUTC
+	Llevel
 	Lshortlevel
 	Lcolor
+	LstdFlags = Ldate | Ltime
 )
 
 var colors = map[Level]string{
