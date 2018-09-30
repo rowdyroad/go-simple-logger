@@ -253,3 +253,21 @@ func Crit(args ...interface{}) {
 func Critf(format string, args ...interface{}) {
 	std.Critf(format, args...)
 }
+
+//SetFlags (see log package)
+func SetFlags(flag int) { std.Logger.SetFlags(flag) }
+
+//SetOutput (see log package)
+func SetOutput(w io.Writer) { std.Logger.SetOutput(w) }
+
+//SetPrefix (see log package)
+func SetPrefix(prefix string) { std.Logger.SetPrefix(prefix) }
+
+//Flags (see log package)
+func Flags() int { return std.Logger.Flags() }
+
+//Output (see log package)
+func Output(calldepth int, s string) error { return std.Logger.Output(calldepth, s) }
+
+//Prefix (see log package)
+func Prefix() string { return std.Logger.Prefix() }
