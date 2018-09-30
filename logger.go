@@ -23,16 +23,16 @@ const (
 
 // log flags
 const (
-	Ldate = 1 << iota
-	Ltime
-	Lmicroseconds
-	Llongfile
-	Lshortfile
-	LUTC
-	Llevel
+	Ldate         = log.Ldate
+	Ltime         = log.Ltime
+	Lmicroseconds = log.Lmicroseconds
+	Llongfile     = log.Llongfile
+	Lshortfile    = log.Lshortfile
+	LUTC          = log.LUTC
+	LstdFlags     = log.LstdFlags
+	Llevel        = LUTC << iota
 	Lshortlevel
 	Lcolor
-	LstdFlags = Ldate | Ltime
 )
 
 var colors = map[Level]string{
@@ -54,8 +54,6 @@ var titles = map[Level]string{
 }
 
 const resetColor = "\033[0m"
-
-var logger *Logger
 
 // Logger simple logger wrapper
 type Logger struct {
@@ -145,6 +143,24 @@ func (l *Logger) Critf(format string, args ...interface{}) {
 	l.logf(LevelError, format, args...)
 	panic(fmt.Sprint(args...))
 }
+
+//SetFlags (see log package)
+func (l *Logger) SetFlags(flag int) { l.Logger.SetFlags(flag) }
+
+//SetOutput (see log package)
+func (l *Logger) SetOutput(w io.Writer) { l.Logger.SetOutput(w) }
+
+//SetPrefix (see log package)
+func (l *Logger) SetPrefix(prefix string) { l.Logger.SetPrefix(prefix) }
+
+//Flags (see log package)
+func (l *Logger) Flags() int { return l.Logger.Flags() }
+
+//Output (see log package)
+func (l *Logger) Output(calldepth int, s string) error { return l.Logger.Output(calldepth, s) }
+
+//Prefix (see log package)
+func (l *Logger) Prefix() string { return l.Logger.Prefix() }
 
 func (l *Logger) log(level Level, args ...interface{}) {
 	l.logf(level, strings.TrimRight(strings.Repeat("%v ", len(args)), " "), args...)
