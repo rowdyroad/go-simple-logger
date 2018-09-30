@@ -24,7 +24,6 @@ package main
 import log "github.com/rowdyroad/go-simple-logger"
 
 func main() {
-
 	log.SetFlags(log.LstdFlags | log.Lshortlevel | log.Lcolor)
 	log.Info("info")
 	log.Debug("info")
