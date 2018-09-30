@@ -63,13 +63,7 @@ type Logger struct {
 }
 
 // New creates a new Logger.
-func New(out io.Writer, prefix string, flag int, args ...interface{}) *Logger {
-	level := LevelInfo
-	if len(args) > 0 {
-		if l, ok := args[0].(Level); ok {
-			level = l
-		}
-	}
+func New(out io.Writer, prefix string, flag int, level Level) *Logger {
 	return &Logger{
 		log.New(out, prefix, flag),
 		level,
@@ -187,7 +181,7 @@ func (l *Logger) logf(level Level, format string, args ...interface{}) {
 	}
 }
 
-var std = New(os.Stderr, "", LstdFlags|Llevel|Lcolor)
+var std = New(os.Stderr, "", LstdFlags|Llevel|Lcolor, LevelInfo)
 
 //SetLevel setting logger level
 func SetLevel(level Level) {
