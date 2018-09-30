@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -78,64 +79,64 @@ func (l *Logger) SetLevel(level Level) {
 
 //Info with args
 func (l *Logger) Info(args ...interface{}) {
-	l.log(LevelInfo, args...)
+	l.log(2, LevelInfo, args...)
 }
 
 //Infof with format and args
 func (l *Logger) Infof(format string, args ...interface{}) {
-	l.logf(LevelInfo, format, args...)
+	l.logf(2, LevelInfo, format, args...)
 }
 
 //Debug with args
 func (l *Logger) Debug(args ...interface{}) {
-	l.log(LevelDebug, args...)
+	l.log(2, LevelDebug, args...)
 }
 
 //Debugf with format and args
 func (l *Logger) Debugf(format string, args ...interface{}) {
-	l.logf(LevelDebug, format, args...)
+	l.logf(2, LevelDebug, format, args...)
 }
 
 //Trace with args
 func (l *Logger) Trace(args ...interface{}) {
-	l.log(LevelTrace, args...)
+	l.log(2, LevelTrace, args...)
 }
 
 //Tracef with format and args
 func (l *Logger) Tracef(format string, args ...interface{}) {
-	l.logf(LevelTrace, format, args...)
+	l.logf(2, LevelTrace, format, args...)
 }
 
 //Warn with args
 func (l *Logger) Warn(args ...interface{}) {
-	l.log(LevelWarning, args...)
+	l.log(2, LevelWarning, args...)
 }
 
 //Warnf with format and args
 func (l *Logger) Warnf(format string, args ...interface{}) {
-	l.logf(LevelWarning, format, args...)
+	l.logf(2, LevelWarning, format, args...)
 }
 
 //Error with format and args
 func (l *Logger) Error(args ...interface{}) {
-	l.log(LevelError, args...)
+	l.log(2, LevelError, args...)
 }
 
 //Errorf with format and args
 func (l *Logger) Errorf(format string, args ...interface{}) {
-	l.logf(LevelError, format, args...)
+	l.logf(2, LevelError, format, args...)
 }
 
 //Crit with args
 func (l *Logger) Crit(args ...interface{}) {
-	l.log(LevelError, args...)
-	panic(fmt.Sprint(args...))
+	l.log(2, LevelError, args...)
+	panic(errors.New(fmt.Sprintln(args...)))
 }
 
 //Critf with format and args
 func (l *Logger) Critf(format string, args ...interface{}) {
-	l.logf(LevelError, format, args...)
-	panic(fmt.Sprint(args...))
+	l.logf(2, LevelError, format, args...)
+	panic(fmt.Errorf(format, args...))
 }
 
 //SetFlags (see log package)
@@ -156,11 +157,11 @@ func (l *Logger) Output(calldepth int, s string) error { return l.Logger.Output(
 //Prefix (see log package)
 func (l *Logger) Prefix() string { return l.Logger.Prefix() }
 
-func (l *Logger) log(level Level, args ...interface{}) {
-	l.logf(level, strings.TrimRight(strings.Repeat("%v ", len(args)), " "), args...)
+func (l *Logger) log(calldepth int, level Level, args ...interface{}) {
+	l.logf(calldepth+1, level, strings.TrimRight(strings.Repeat("%v ", len(args)), " "), args...)
 }
 
-func (l *Logger) logf(level Level, format string, args ...interface{}) {
+func (l *Logger) logf(calldepth int, level Level, format string, args ...interface{}) {
 	if l.level < level {
 		return
 	}
@@ -174,8 +175,7 @@ func (l *Logger) logf(level Level, format string, args ...interface{}) {
 	if l.Flags()&Lshortlevel != 0 {
 		levelString = titles[level][0:1] + " "
 	}
-
-	l.Printf("%s%s", levelString, fmt.Sprintf(format, args...))
+	l.Output(calldepth+2, fmt.Sprintf("%s%s", levelString, fmt.Sprintf(format, args...)))
 	if l.Flags()&Lcolor != 0 {
 		fmt.Fprintf(l.out, resetColor)
 	}
@@ -190,62 +190,64 @@ func SetLevel(level Level) {
 
 //Info with args
 func Info(args ...interface{}) {
-	std.Info(args...)
+	std.log(2, LevelInfo, args...)
 }
 
 //Infof with format and args
 func Infof(format string, args ...interface{}) {
-	std.Infof(format, args...)
+	std.logf(2, LevelInfo, format, args...)
 }
 
 //Debug with args
 func Debug(args ...interface{}) {
-	std.Debug(args...)
+	std.log(2, LevelDebug, args...)
 }
 
 //Debugf with format and args
 func Debugf(format string, args ...interface{}) {
-	std.Debugf(format, args...)
+	std.logf(2, LevelDebug, format, args...)
 }
 
 //Trace with args
 func Trace(args ...interface{}) {
-	std.Trace(args...)
+	std.log(2, LevelTrace, args...)
 }
 
 //Tracef with format and args
 func Tracef(format string, args ...interface{}) {
-	std.Tracef(format, args...)
+	std.logf(2, LevelTrace, format, args...)
 }
 
 //Warn with args
 func Warn(args ...interface{}) {
-	std.Warn(args...)
+	std.log(2, LevelWarning, args...)
 }
 
 //Warnf with format and args
 func Warnf(format string, args ...interface{}) {
-	std.Warnf(format, args...)
+	std.logf(2, LevelWarning, format, args...)
 }
 
 //Error with args
 func Error(args ...interface{}) {
-	std.Error(args...)
+	std.log(2, LevelError, args...)
 }
 
 //Errorf with format and args
 func Errorf(format string, args ...interface{}) {
-	std.Errorf(format, args...)
+	std.logf(2, LevelError, format, args...)
 }
 
 //Crit with args
 func Crit(args ...interface{}) {
-	std.Crit(args...)
+	std.log(2, LevelError, args...)
+	panic(errors.New(fmt.Sprintln(args...)))
 }
 
 //Critf with format and args
 func Critf(format string, args ...interface{}) {
-	std.Critf(format, args...)
+	std.logf(2, LevelError, format, args...)
+	panic(fmt.Errorf(format, args...))
 }
 
 //SetFlags (see log package)
