@@ -267,3 +267,8 @@ func Output(calldepth int, s string) error { return std.Logger.Output(calldepth,
 
 //Prefix (see log package)
 func Prefix() string { return std.Logger.Prefix() }
+
+//NewPrefixed new prefixed logger
+func NewPrefixed(prefix string, args ...interface{}) *Logger {
+	return New(std.out, fmt.Sprintf(prefix, args...), std.Flags(), std.level)
+}
