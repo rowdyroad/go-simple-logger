@@ -59,14 +59,16 @@ const resetColor = "\033[0m"
 // Logger simple logger wrapper
 type Logger struct {
 	*log.Logger
-	level Level
-	out   io.Writer
+	prefix string
+	level  Level
+	out    io.Writer
 }
 
 // New creates a new Logger.
 func New(out io.Writer, prefix string, flag int, level Level) *Logger {
 	return &Logger{
-		log.New(out, prefix, flag),
+		log.New(out, "", flag),
+		prefix,
 		level,
 		out,
 	}
@@ -146,7 +148,7 @@ func (l *Logger) SetFlags(flag int) { l.Logger.SetFlags(flag) }
 func (l *Logger) SetOutput(w io.Writer) { l.Logger.SetOutput(w) }
 
 //SetPrefix (see log package)
-func (l *Logger) SetPrefix(prefix string) { l.Logger.SetPrefix(prefix) }
+func (l *Logger) SetPrefix(prefix string) { l.prefix = prefix }
 
 //Flags (see log package)
 func (l *Logger) Flags() int { return l.Logger.Flags() }
@@ -155,7 +157,7 @@ func (l *Logger) Flags() int { return l.Logger.Flags() }
 func (l *Logger) Output(calldepth int, s string) error { return l.Logger.Output(calldepth, s) }
 
 //Prefix (see log package)
-func (l *Logger) Prefix() string { return l.Logger.Prefix() }
+func (l *Logger) Prefix() string { return l.prefix }
 
 func (l *Logger) log(calldepth int, level Level, args ...interface{}) {
 	l.logf(calldepth+1, level, strings.TrimRight(strings.Repeat("%v ", len(args)), " "), args...)
@@ -175,10 +177,19 @@ func (l *Logger) logf(calldepth int, level Level, format string, args ...interfa
 	if l.Flags()&Lshortlevel != 0 {
 		levelString = titles[level][0:1] + " "
 	}
-	l.Output(calldepth+2, fmt.Sprintf("%s%s", levelString, fmt.Sprintf(format, args...)))
+	p := l.prefix
+	if p != "" {
+		p += " "
+	}
+	l.Output(calldepth+2, fmt.Sprintf("%s%s%s", levelString, p, fmt.Sprintf(format, args...)))
 	if l.Flags()&Lcolor != 0 {
 		fmt.Fprintf(l.out, resetColor)
 	}
+}
+
+//NewPrefixed new prefixed logger
+func (l *Logger) NewPrefixed(prefix string, args ...interface{}) *Logger {
+	return New(std.out, l.Prefix()+fmt.Sprintf(prefix, args...), std.Flags(), std.level)
 }
 
 var std = New(os.Stderr, "", LstdFlags|Llevel|Lcolor, LevelInfo)

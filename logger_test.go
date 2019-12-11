@@ -25,7 +25,7 @@ func TestShortFileFlags(t *testing.T) {
 
 	log := New(os.Stderr, "", Lshortfile|LstdFlags|Lshortlevel, LevelInfo)
 	log.Info("Info", 1)
-	log.Infof("Info %s", 1)
+	log.Infof("Info %d", 1)
 }
 
 func TestLevel(t *testing.T) {
@@ -40,4 +40,14 @@ func TestLevel(t *testing.T) {
 	Warnf("Warnf %d", 1)
 	Error("Error", 5)
 	Errorf("Errorf %d", 1)
+}
+
+func TestPrefix(t *testing.T) {
+	Debug("test")
+	x := NewPrefixed("[%s]", "hello")
+
+	x.Debug("Foo")
+	x2 := x.NewPrefixed("[%s]", "xxx")
+
+	x2.Debug("Hello")
 }
